@@ -1,0 +1,74 @@
+<nav class="navbar">
+  <span class="brand">Color Game — Admin</span>
+  <div class="navbar-right">
+    <span>{{ auth.username() }}</span>
+    <button (click)="logout()">Log Out</button>
+  </div>
+</nav>
+
+<div class="content">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">Utilisateurs</button>
+    <button [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">Historique global</button>
+  </div>
+
+  @if (activeTab === 'users') {
+    <h2>Liste des utilisateurs</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Rôle</th>
+          <th>Date de création</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users; track user.id) {
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        }
+        @empty {
+          <tr><td colspan="3">Aucun utilisateur.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (activeTab === 'history') {
+    <h2>Historique global</h2>
+    <div class="filter">
+      <label>Filtrer par utilisateur : <input type="text" [(ngModel)]="filterUsername" placeholder="username"></label>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Date</th>
+          <th>Ligne</th>
+          <th>Colonne</th>
+          <th>Couleur</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of filteredHistory; track entry.id) {
+          <tr>
+            <td>{{ entry.username }}</td>
+            <td>{{ entry.changedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ entry.rowIndex }}</td>
+            <td>{{ entry.colIndex }}</td>
+            <td>
+              <span class="color-swatch" [style.backgroundColor]="entry.color"></span>
+              {{ entry.color }}
+            </td>
+          </tr>
+        }
+        @empty {
+          <tr><td colspan="5">Aucun changement enregistré.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

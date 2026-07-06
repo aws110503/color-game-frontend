@@ -1,0 +1,11 @@
+<nav class="navbar">
+  <span class="brand">Color Game</span>
+  <div class="navbar-right">
+    <span>{{ auth.username() }}</span>
+    <button (click)="logout()">Log Out</button>
+  </div>
+</nav>
+
+<div class="content">
+  <button (click)="goToGame()">Color Game</button>
+</div>
