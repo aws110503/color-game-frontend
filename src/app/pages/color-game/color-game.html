@@ -10,6 +10,22 @@
   <label>Nombre de colonnes: <input type="number" min="1" [(ngModel)]="columns" (change)="generateGrid()"></label>
   <label>Nombre de lignes: <input type="number" min="1" [(ngModel)]="rows" (change)="generateGrid()"></label>
 </div>
+
+<div class="command-box">
+  <label>Commande en langage naturel :</label>
+  <div class="command-input-row">
+    <input
+      type="text"
+      [(ngModel)]="commandInput"
+      (keyup.enter)="executeCommand()"
+      placeholder='ex: "remplis la ligne 2 en bleu"'>
+    <button (click)="executeCommand()">Exécuter</button>
+  </div>
+  @if (commandFeedback) {
+    <p class="command-feedback" [class]="commandFeedbackType">{{ commandFeedback }}</p>
+  }
+</div>
+
 @if (totalPredictions > 0) {
   <div class="prediction-score">
     🎯 Précision du jeu : {{ correctPredictions }}/{{ totalPredictions }}

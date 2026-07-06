@@ -4,6 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../auth';
 import { DecimalPipe } from '@angular/common';
+import { parseGridCommand, GridCommand } from '../../command-parser';
 
 interface HistoryEntry {
   color: string;
@@ -34,6 +35,9 @@ export class ColorGame implements OnInit {
   predictionResult: 'correct' | 'wrong' | null = null;
   correctPredictions = 0;
   totalPredictions = 0;
+  commandInput = '';
+  commandFeedback = '';
+  commandFeedbackType: 'success' | 'error' | '' = '';
 
   constructor(private http: HttpClient, public auth: AuthService, private router: Router) {
     this.generateGrid();
@@ -60,6 +64,87 @@ export class ColorGame implements OnInit {
       Array.from({ length: this.columns }, () => '#ffffff')
     );
   }
+  executeCommand() {
+  if (!this.commandInput.trim()) return;
+
+  const command: GridCommand = parseGridCommand(this.commandInput);
+
+  switch (command.type) {
+    case 'clear':
+      this.generateGrid();
+      this.commandFeedback = '✅ Grille réinitialisée.';
+      this.commandFeedbackType = 'success';
+      break;
+
+    case 'all':
+      for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.columns; c++) {
+          this.applyColorToCell(r, c, command.color!);
+        }
+      }
+      this.commandFeedback = `✅ Toute la grille remplie en ${command.color}.`;
+      this.commandFeedbackType = 'success';
+      break;
+
+    case 'row':
+      if (command.row! >= 0 && command.row! < this.rows) {
+        for (let c = 0; c < this.columns; c++) {
+          this.applyColorToCell(command.row!, c, command.color!);
+        }
+        this.commandFeedback = `✅ Ligne ${command.row! + 1} remplie en ${command.color}.`;
+        this.commandFeedbackType = 'success';
+      } else {
+        this.commandFeedback = `❌ La ligne ${command.row! + 1} n'existe pas dans cette grille.`;
+        this.commandFeedbackType = 'error';
+      }
+      break;
+
+    case 'column':
+      if (command.col! >= 0 && command.col! < this.columns) {
+        for (let r = 0; r < this.rows; r++) {
+          this.applyColorToCell(r, command.col!, command.color!);
+        }
+        this.commandFeedback = `✅ Colonne ${command.col! + 1} remplie en ${command.color}.`;
+        this.commandFeedbackType = 'success';
+      } else {
+        this.commandFeedback = `❌ La colonne ${command.col! + 1} n'existe pas dans cette grille.`;
+        this.commandFeedbackType = 'error';
+      }
+      break;
+
+    case 'cell':
+      if (command.row! >= 0 && command.row! < this.rows && command.col! >= 0 && command.col! < this.columns) {
+        this.applyColorToCell(command.row!, command.col!, command.color!);
+        this.commandFeedback = `✅ Case (${command.row! + 1}, ${command.col! + 1}) remplie en ${command.color}.`;
+        this.commandFeedbackType = 'success';
+      } else {
+        this.commandFeedback = `❌ Cette case n'existe pas dans cette grille.`;
+        this.commandFeedbackType = 'error';
+      }
+      break;
+
+    default:
+      this.commandFeedback = `❓ Commande non reconnue. Essayez : "remplis la ligne 2 en bleu"`;
+      this.commandFeedbackType = 'error';
+  }
+
+  this.commandInput = '';
+}
+
+private applyColorToCell(row: number, col: number, color: string) {
+  this.grid[row][col] = color;
+
+  const normalized = color.toLowerCase().trim();
+  this.colorFrequency[normalized] = (this.colorFrequency[normalized] || 0) + 1;
+
+  this.http.post(this.apiUrl, {
+    rowIndex: row,
+    colIndex: col,
+    color: color
+  }).subscribe({
+    error: (err) => console.error('Erreur enregistrement historique:', err)
+  });
+}
 
   private predictNextColor(): string | null {
     const colors = Object.keys(this.colorFrequency);

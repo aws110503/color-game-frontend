@@ -139,3 +139,43 @@
   color: #c62828;
   font-weight: 600;
 }
+.command-box {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 0 20px 20px 20px;
+  max-width: 600px;
+}
+.command-box label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.command-input-row {
+  display: flex;
+  gap: 8px;
+}
+.command-input-row input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.command-input-row button {
+  padding: 8px 16px;
+  background: #6a1b9a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.command-feedback {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.command-feedback.success { color: #2e7d32; }
+.command-feedback.error { color: #c62828; }
