@@ -10,6 +10,12 @@
   <label>Nombre de colonnes: <input type="number" min="1" [(ngModel)]="columns" (change)="generateGrid()"></label>
   <label>Nombre de lignes: <input type="number" min="1" [(ngModel)]="rows" (change)="generateGrid()"></label>
 </div>
+@if (totalPredictions > 0) {
+  <div class="prediction-score">
+    🎯 Précision du jeu : {{ correctPredictions }}/{{ totalPredictions }}
+    ({{ (correctPredictions / totalPredictions * 100) | number:'1.0-0' }}%)
+  </div>
+}
 
 <div class="grid">
   @for (row of grid; track $index; let r = $index) {
@@ -29,7 +35,24 @@
   <div class="popup-overlay">
     <div class="popup">
       <h3>Couleur</h3>
+
+      @if (predictedColor && !predictionResult) {
+        <p class="prediction">
+          🔮 Le jeu pense que vous allez choisir...
+          <span class="predicted-color-name">{{ predictedColor }}</span>
+          <span class="predicted-swatch" [style.backgroundColor]="predictedColor"></span>
+        </p>
+      }
+
+      @if (predictionResult === 'correct') {
+        <p class="prediction correct">✅ Le jeu avait raison !</p>
+      }
+      @if (predictionResult === 'wrong') {
+        <p class="prediction wrong">❌ Le jeu s'est trompé, il pensait "{{ predictedColor }}"</p>
+      }
+
       <input type="text" [(ngModel)]="tempColor" placeholder="ex: yellow, red, #ff0000">
+
       <div class="popup-actions">
         <button class="btn-validate" (click)="confirmColor()">Valider</button>
         <button class="btn-cancel" (click)="cancelColor()">Annuler</button>

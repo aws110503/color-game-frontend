@@ -103,3 +103,39 @@
   border-radius: 4px;
   cursor: pointer;
 }
+.prediction-score {
+  padding: 8px 20px;
+  font-weight: 600;
+  color: #333;
+}
+.prediction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f0f4ff;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.predicted-color-name {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.predicted-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid #999;
+}
+.prediction.correct {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+}
+.prediction.wrong {
+  background: #ffebee;
+  color: #c62828;
+  font-weight: 600;
+}
