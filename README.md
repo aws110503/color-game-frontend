@@ -1,59 +1,38 @@
-# MyApp
+# Color Game — Frontend (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.18.
+Interface Angular pour l'application Color Game : connexion, inscription, jeu de grille de couleurs, historique personnel, et espace d'administration.
 
-## Development server
+Backend associé (API + base de données + instructions complètes) : [color-game-backend](https://github.com/aws110503/color-game-backend)
 
-To start a local development server, run:
+## Prérequis
+
+- Node.js 20+ et npm
+- Angular CLI (`npm install -g @angular/cli`)
+- Le backend doit être lancé au préalable sur `http://localhost:8080` (voir le [dépôt backend](https://github.com/aws110503/color-game-backend) pour les instructions de configuration de la base de données et du serveur)
+
+## Installation et lancement
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+L'application est accessible sur `http://localhost:4200`.
 
-## Code scaffolding
+## Structure des routes
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Route | Composant | Accès |
+|---|---|---|
+| `/login` | Login | Public |
+| `/register` | Register | Public |
+| `/game` | ColorGame | Authentifié (USER/ADMIN) |
+| `/history` | History | Authentifié (USER/ADMIN) |
+| `/admin` | Admin | ADMIN uniquement |
 
-```bash
-ng generate component component-name
-```
+## Fonctionnement de l'authentification
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Le token JWT retourné par le backend est stocké dans le `localStorage` du navigateur. Un `HttpInterceptor` (`jwt-interceptor.ts`) l'attache automatiquement à chaque requête HTTP sortante via le header `Authorization: Bearer <token>`.
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Deux guards protègent les routes :
+- `auth-guard.ts` → redirige vers `/login` si aucun token n'est présent
+- `admin-guard.ts` → redirige vers `/login` si l'utilisateur n'a pas le rôle ADMIN
