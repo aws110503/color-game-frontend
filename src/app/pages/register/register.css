@@ -37,3 +37,41 @@ button {
 a {
   color: #1976d2;
 }
+.strength-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.strength-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+.strength-fill.score-0 { width: 20%; background: #d32f2f; }
+.strength-fill.score-1 { width: 40%; background: #f57c00; }
+.strength-fill.score-2 { width: 60%; background: #fbc02d; }
+.strength-fill.score-3 { width: 80%; background: #7cb342; }
+.strength-fill.score-4 { width: 100%; background: #388e3c; }
+
+.strength-label {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.strength-label.score-0, .strength-label.score-1 { color: #d32f2f; }
+.strength-label.score-2 { color: #f57c00; }
+.strength-label.score-3, .strength-label.score-4 { color: #388e3c; }
+
+.hint {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
