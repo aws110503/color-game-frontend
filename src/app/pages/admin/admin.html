@@ -33,6 +33,11 @@
         (click)="activeTab = 'history'">
         📜 Historique global
       </button>
+      <button
+        class="tab-btn"
+        (click)="goToSecurity()">
+        🛡️ Security Dashboard
+      </button>
     </div>
 
     @switch (activeTab) {
