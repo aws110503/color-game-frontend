@@ -1,0 +1,113 @@
+<div class="play-container">
+  <!-- Header -->
+  <header class="play-header">
+    <h1>🎮 Partie en cours</h1>
+    <a routerLink="/lobby" class="btn-ghost">✕ Annuler</a>
+  </header>
+
+  @switch (phase()) {
+    <!-- ========== PHASE EXPOSITION ========== -->
+    @case ('exposure') {
+      <div class="timer-bar">
+        <p class="timer-text">
+          Mémorisez la grille — <span class="count">{{ secondsLeft() }}</span>s
+        </p>
+      </div>
+
+      <div class="game-card">
+        <div class="grid-display">
+          <app-pattern-display [grid]="targetGrid" mode="exposure"></app-pattern-display>
+        </div>
+      </div>
+    }
+
+    <!-- ========== PHASE SAISIE ========== -->
+    @case ('input') {
+      <div class="instructions-bar">
+        <p class="instructions-text">
+          Reproduisez la grille de mémoire — cliquez une case, puis une couleur
+        </p>
+      </div>
+
+      <div class="game-card">
+        <div class="grid-display">
+          <app-pattern-display
+            [grid]="playerGrid()"
+            mode="input"
+            [selectedCell]="selectedCell()"
+            (cellClick)="onCellClick($event)">
+          </app-pattern-display>
+        </div>
+
+        @if (selectedCell()) {
+          <div class="palette-section">
+            <p class="palette-label">Choisissez une couleur</p>
+            <div class="palette">
+              @for (color of colors; track color) {
+                <button
+                  class="swatch"
+                  [style.background-color]="color"
+                  [title]="color"
+                  (click)="pickColor(color)">
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="error-bar">
+            <p class="error-text">{{ errorMessage() }}</p>
+          </div>
+        }
+
+        <div class="submit-section">
+          <button
+            class="btn-primary"
+            [disabled]="!allCellsFilled() || submitting()"
+            (click)="submit()">
+            {{ submitting() ? '⏳ Envoi en cours...' : '✓ Valider ma grille' }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ========== PHASE RÉSULTAT ========== -->
+    @case ('result') {
+      @if (result(); as r) {
+        <div class="result-card">
+          <div class="score-section">
+            <div class="score-label">Score final</div>
+            <div class="score-value">{{ r.playerScore }}<span class="score-max"> / 100</span></div>
+          </div>
+
+          <div class="verdict-box">
+            <p class="verdict-text">{{ r.verdict }}</p>
+          </div>
+
+          @if (r.dominantMistake && r.dominantMistake !== 'none') {
+            <div class="focus-tag">
+              <span class="label">⚡ Point à travailler</span>
+              <span class="value">{{ r.dominantMistake }}</span>
+            </div>
+          }
+
+          <div class="heatmap-section">
+            <app-pattern-display
+              [grid]="playerGrid()"
+              mode="result"
+              [exactHeatmap]="r.exactMatchHeatmap"
+              [familyHeatmap]="r.familyMatchHeatmap">
+            </app-pattern-display>
+          </div>
+
+          <div class="play-again-section">
+            <button class="btn-new-game" (click)="playAgain()">
+              ▶ Nouvelle partie
+            </button>
+          </div>
+        </div>
+      }
+    }
+  }
+</div>

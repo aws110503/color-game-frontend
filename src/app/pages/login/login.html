@@ -1,18 +1,63 @@
-<div class="login-container">
-  <h2>Connexion</h2>
-  <form (ngSubmit)="onSubmit()">
-    <div>
-      <label>Nom d'utilisateur ou Email</label>
-      <input type="text" [(ngModel)]="identifier" name="identifier" required>
+<div class="login-wrapper">
+  <div class="login-brand">
+    <div class="brand-dots">
+      <span class="brand-dot"></span>
+      <span class="brand-dot"></span>
+      <span class="brand-dot"></span>
+      <span class="brand-dot"></span>
+      <span class="brand-dot"></span>
     </div>
-    <div>
-      <label>Mot de passe</label>
-      <input type="password" [(ngModel)]="password" name="password" required>
+    <h1 class="brand-title">Color Game</h1>
+    <p class="brand-subtitle">Entraîne ta mémoire visuelle</p>
+  </div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Connexion</h2>
+      <p>Accède à ton espace personnel</p>
     </div>
-    @if (errorMessage) {
-        <p class="error">{{ errorMessage }}</p>
-    }    
-    <button type="submit">Se connecter</button>
-  </form>
-  <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="form-group">
+        <label class="form-label">Nom d'utilisateur ou Email</label>
+        <div class="form-input-wrapper">
+          <input
+            type="text"
+            class="form-input"
+            [(ngModel)]="credentials.username"
+            name="username"
+            placeholder="AwsBENLETAIFA"
+            required>
+          <span class="form-icon">👤</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <div class="form-input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-input"
+            [(ngModel)]="credentials.password"
+            name="password"
+            placeholder="••••••••"
+            required>
+          <span class="form-icon">🔒</span>
+          <button type="button" class="password-toggle" (click)="togglePassword()">
+            {{ showPassword ? '🙈' : '👁' }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-primary">Se connecter →</button>
+    </form>
+
+    <div class="login-footer">
+      <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+    </div>
+  </div>
 </div>

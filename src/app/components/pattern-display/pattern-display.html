@@ -1,0 +1,32 @@
+<div class="pattern-display-container">
+  <div class="pattern-grid" [style.grid-template-columns]="'repeat(' + grid[0]?.length + ', 1fr)'">
+    @for (row of grid; track trackByIndex($index); let rowIdx = $index) {
+      @for (cell of row; track trackByIndex($index); let colIdx = $index) {
+        <div
+          class="pattern-cell"
+          [class]="getCellClass(rowIdx, colIdx)"
+          [style.background-color]="mode !== 'result' ? (grid[rowIdx]?.[colIdx] || 'transparent') : null"
+          [style.animation-delay]="(rowIdx * grid[0].length + colIdx) * 0.05 + 's'"
+          (click)="onCellClick(rowIdx, colIdx)">
+        </div>
+      }
+    }
+  </div>
+
+  @if (mode === 'result') {
+    <div class="grid-legend">
+      <div class="legend-item">
+        <div class="legend-dot exact"></div>
+        <span>Correct</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot family"></div>
+        <span>Famille proche</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot wrong"></div>
+        <span>Erreur</span>
+      </div>
+    </div>
+  }
+</div>

@@ -1,43 +1,110 @@
-<nav class="navbar">
-  <span class="brand">Color Game</span>
-  <div class="navbar-right">
-    <span>{{ auth.username() }}</span>
-    <a routerLink="/game">Retour au jeu</a>
-    <button (click)="logout()">Log Out</button>
-  </div>
-</nav>
+<div class="history-container">
+  <!-- Header -->
+  <header class="history-header">
+    <div class="header-brand">
+      <div class="brand-dots">
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+      </div>
+      <h1>📜 Mon historique</h1>
+    </div>
+    <a routerLink="/lobby" class="btn-ghost">← Retour au lobby</a>
+  </header>
 
-<div class="content">
-  <h2>Mon historique</h2>
+  <!-- Main Content -->
+  <main class="history-main">
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🎮</div>
+        <div class="stat-value">{{ totalGames }}</div>
+        <div class="stat-label">Parties jouées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value">{{ bestScore }}</div>
+        <div class="stat-label">Meilleur score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">{{ averageScore | number:'1.1-1' }}</div>
+        <div class="stat-label">Score moyen</div>
+      </div>
+    </div>
 
-  <div class="filter">
-    <label>Filtrer par date : <input type="date" [(ngModel)]="filterDate"></label>
-  </div>
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <input
+        type="text"
+        class="filter-input"
+        placeholder="🔍 Filtrer par date ou score..."
+        [(ngModel)]="filterText"
+        (input)="applyFilter()">
+      <select class="filter-select" [(ngModel)]="sortBy" (change)="applyFilter()">
+        <option value="date-desc">Plus récent d'abord</option>
+        <option value="date-asc">Plus ancien d'abord</option>
+        <option value="score-desc">Meilleur score d'abord</option>
+        <option value="score-asc">Plus faible score d'abord</option>
+      </select>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Ligne</th>
-        <th>Colonne</th>
-        <th>Couleur</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (entry of filteredEntries; track entry.id) {
-        <tr>
-          <td>{{ entry.changedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td>{{ entry.rowIndex }}</td>
-          <td>{{ entry.colIndex }}</td>
-          <td>
-            <span class="color-swatch" [style.backgroundColor]="entry.color"></span>
-            {{ entry.color }}
-          </td>
-        </tr>
+    <!-- History List -->
+    <div class="history-list">
+      @for (item of filteredHistory; track item.id) {
+        <div class="history-card" [class]="'score-' + getScoreClass(item.playerScore)">
+          <div class="card-header">
+            <div class="card-date">
+              <span class="date-day">{{ item.playedAt | date:'dd' }}</span>
+              <span class="date-month">{{ item.playedAt | date:'MMM' }}</span>
+            </div>
+            <div class="card-score">
+              <span class="score-value">{{ item.playerScore }}</span>
+              <span class="score-max">/ 100</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="meta-item">
+                <span class="meta-icon">🎯</span>
+                Grille {{ item.gridSize }}
+              </span>
+              <span class="meta-item">
+                <span class="meta-icon">⏱️</span>
+                {{ item.exposureTime }}s d'exposition
+              </span>
+            </div>
+
+            <div class="card-verdict" *ngIf="item.verdict">
+              <p>{{ item.verdict }}</p>
+            </div>
+
+            @if (item.dominantMistake && item.dominantMistake !== 'none') {
+              <div class="focus-tag">
+                <span class="label">⚡ Point à travailler</span>
+                <span class="value">{{ item.dominantMistake }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="card-footer">
+            <span class="time-ago">{{ item.playedAt | date:'HH:mm' }}</span>
+            <button class="btn-details" (click)="viewDetails(item.id)">
+              Voir détails →
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <h3>Aucune partie jouée</h3>
+          <p>Ton historique apparaîtra ici après ta première partie.</p>
+          <a routerLink="/lobby" class="btn-primary">Commencer une partie</a>
+        </div>
       }
-      @empty {
-        <tr><td colspan="4">Aucun changement enregistré.</td></tr>
-      }
-    </tbody>
-  </table>
+    </div>
+  </main>
 </div>

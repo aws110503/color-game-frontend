@@ -1,0 +1,153 @@
+<div class="profile-container">
+  <!-- Header -->
+  <header class="profile-header">
+    <div class="header-brand">
+      <div class="brand-dots">
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+      </div>
+      <h1>👤 Mon profil</h1>
+    </div>
+    <a routerLink="/lobby" class="btn-ghost">← Retour au lobby</a>
+  </header>
+
+  <!-- Main Content -->
+  <main class="profile-main">
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <div class="avatar-circle">
+          {{ currentUser.charAt(0).toUpperCase() }}
+        </div>
+        <div class="profile-info">
+          <h2 class="profile-name">{{ currentUser }}</h2>
+          <span class="profile-role" [class.admin]="isAdmin">{{ isAdmin ? 'Administrateur' : 'Joueur' }}</span>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <span class="pstat-value">{{ profile.totalGames }}</span>
+          <span class="pstat-label">Parties</span>
+        </div>
+        <div class="profile-stat">
+          <span class="pstat-value">{{ profile.averageScore | number:'1.1-1' }}</span>
+          <span class="pstat-label">Score moyen</span>
+        </div>
+        <div class="profile-stat">
+          <span class="pstat-value">{{ profile.currentDifficulty }}</span>
+          <span class="pstat-label">Niveau actuel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-section">
+      <h3 class="section-title">📊 Statistiques détaillées</h3>
+      <div class="stats-grid-detailed">
+        <div class="detailed-stat">
+          <div class="dstat-icon">🎯</div>
+          <div class="dstat-value">{{ profile.totalGames }}</div>
+          <div class="dstat-label">Parties jouées</div>
+        </div>
+        <div class="detailed-stat">
+          <div class="dstat-icon">🏆</div>
+          <div class="dstat-value">{{ bestScore }}</div>
+          <div class="dstat-label">Meilleur score</div>
+        </div>
+        <div class="detailed-stat">
+          <div class="dstat-icon">📈</div>
+          <div class="dstat-value">{{ profile.averageScore | number:'1.1-1' }}</div>
+          <div class="dstat-label">Score moyen</div>
+        </div>
+        <div class="detailed-stat">
+          <div class="dstat-icon">🎚️</div>
+          <div class="dstat-value">{{ profile.currentDifficulty }}</div>
+          <div class="dstat-label">Difficulté</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weaknesses & Strengths -->
+    <div class="analysis-section" *ngIf="profile.knownWeaknesses.length > 0 || profile.knownStrengths.length > 0">
+      <h3 class="section-title">🔍 Analyse de tes performances</h3>
+
+      <div class="analysis-grid">
+        <div class="analysis-card weaknesses" *ngIf="profile.knownWeaknesses.length > 0">
+          <div class="analysis-header">
+            <span class="analysis-icon">⚡</span>
+            <h4>Points à travailler</h4>
+          </div>
+          <ul class="analysis-list">
+            <li *ngFor="let weakness of profile.knownWeaknesses">
+              <span class="list-dot red"></span>
+              {{ weakness }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="analysis-card strengths" *ngIf="profile.knownStrengths.length > 0">
+          <div class="analysis-header">
+            <span class="analysis-icon">✨</span>
+            <h4>Tes forces</h4>
+          </div>
+          <ul class="analysis-list">
+            <li *ngFor="let strength of profile.knownStrengths">
+              <span class="list-dot green"></span>
+              {{ strength }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coaching Section -->
+    <div class="coaching-section">
+      <div class="coaching-header">
+        <h3 class="section-title">🎓 Coaching personnel</h3>
+        <button class="btn-coaching" (click)="generateCoaching()" [disabled]="generatingCoaching">
+          {{ generatingCoaching ? '⏳ Génération...' : '🔄 Nouveau conseil' }}
+        </button>
+      </div>
+
+      @if (latestCoaching) {
+        <div class="coaching-card">
+          <div class="coaching-badge">
+            <span class="badge-icon">🤖</span>
+            <span class="badge-text">IA Gemini</span>
+          </div>
+          <h4 class="coaching-title">{{ latestCoaching.headline }}</h4>
+          <p class="coaching-message">{{ latestCoaching.content }}</p>
+          <span class="coaching-date">{{ latestCoaching.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      } @else {
+        <div class="coaching-empty">
+          <div class="coaching-empty-icon">🎓</div>
+          <p>Pas encore de coaching généré.</p>
+          <button class="btn-coaching" (click)="generateCoaching()">
+            🎯 Obtenir mon premier conseil
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Coaching History -->
+    <div class="coaching-history-section" *ngIf="coachingHistory.length > 1">
+      <h3 class="section-title">📜 Historique des conseils</h3>
+      <div class="coaching-history-list">
+        @for (item of coachingHistory.slice(1); track item.id) {
+          <div class="coaching-history-item">
+            <div class="ch-item-header">
+              <span class="ch-item-title">{{ item.headline }}</span>
+              <span class="ch-item-date">{{ item.createdAt | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <p class="ch-item-content">{{ item.content }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>

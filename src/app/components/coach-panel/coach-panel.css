@@ -1,0 +1,60 @@
+.coach-panel {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.message-card {
+  background-color: #f0f7ff;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.message {
+  font-style: italic;
+}
+
+.focus-area {
+  font-weight: bold;
+  color: #f57f17;
+}
+
+.loading {
+  color: #666;
+}
+
+.error {
+  color: #c62828;
+}
+
+.history-toggle {
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.history-list li {
+  border-top: 1px solid #eee;
+  padding: 0.75rem 0;
+}
+
+.history-list .headline {
+  font-weight: bold;
+  margin-right: 0.75rem;
+}
+
+.history-list .date {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.history-list .empty {
+  color: #888;
+  border-top: none;
+}

@@ -1,0 +1,76 @@
+<div class="lobby-container">
+  <header class="lobby-header">
+    <div class="header-brand">
+      <div class="brand-dots">
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+        <span class="brand-dot"></span>
+      </div>
+      <h1>Bienvenue, <span class="username">{{ currentUser }}</span></h1>
+    </div>
+    <nav class="header-nav">
+      <a routerLink="/profile" class="nav-link">👤 Mon profil</a>
+      <a routerLink="/history" class="nav-link">📜 Historique</a>
+      <button class="btn-logout" (click)="logout()">🚪 Déconnexion</button>
+    </nav>
+  </header>
+
+  <main class="lobby-main">
+    <div class="recommendation-card">
+      <div class="card-accent"></div>
+      <div class="card-content">
+        <p class="card-label">Prochaine partie recommandée</p>
+        <div class="difficulty-badge">
+          <span class="difficulty-dot" [class]="'diff-' + nextParams.difficulty.toLowerCase()"></span>
+          <h2 class="difficulty-name">{{ nextParams.difficulty }}</h2>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-label">Taille de grille</span>
+            <span class="stat-value">{{ nextParams.recommendedGridSize }}</span>
+          </div>
+        </div>
+
+        <div class="stats-row" *ngIf="nextParams.averageRecentScore !== null">
+          <div class="stat-item">
+            <span class="stat-label">Score moyen recent</span>
+            <span class="stat-value">{{ nextParams.averageRecentScore | number:'1.1-1' }}<span class="stat-unit"> /100</span></span>
+          </div>
+        </div>
+
+        <p class="rounds-info" *ngIf="nextParams.roundsConsidered > 0">
+          Base sur {{ nextParams.roundsConsidered }} partie(s) recente(s)
+        </p>
+        <p class="rounds-info" *ngIf="nextParams.roundsConsidered === 0">
+          Premiere partie - bonne chance !
+        </p>
+
+        <button class="btn-start" (click)="startGame()">
+          <span class="btn-icon">▶</span>
+          Commencer une partie
+        </button>
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="quick-stat-card">
+        <div class="quick-stat-icon">🎯</div>
+        <div class="quick-stat-value">{{ totalGames }}</div>
+        <div class="quick-stat-label">Parties jouees</div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="quick-stat-icon">🏆</div>
+        <div class="quick-stat-value">{{ bestScore }}</div>
+        <div class="quick-stat-label">Meilleur score</div>
+      </div>
+      <div class="quick-stat-card">
+        <div class="quick-stat-icon">📊</div>
+        <div class="quick-stat-value">{{ averageScore | number:'1.1-1' }}</div>
+        <div class="quick-stat-label">Score moyen</div>
+      </div>
+    </div>
+  </main>
+</div>

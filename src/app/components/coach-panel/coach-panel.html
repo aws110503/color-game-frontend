@@ -1,0 +1,35 @@
+<div class="coach-panel">
+  <h3>Ton coach</h3>
+
+  @if (loadingLatest()) {
+    <p class="loading">Génération d'un message personnalisé...</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+    <button (click)="generateCoaching()">Réessayer</button>
+  } @else if (latestMessage(); as msg) {
+    <div class="message-card">
+      <p class="message">{{ msg.message }}</p>
+      @if (msg.focusArea !== 'none') {
+        <p class="focus-area">Focus : {{ msg.focusArea }}</p>
+      }
+    </div>
+  }
+
+  <button class="history-toggle" (click)="toggleHistory()">
+    {{ showHistory() ? 'Masquer l\'historique' : 'Voir l\'historique des messages' }}
+  </button>
+
+  @if (showHistory()) {
+    <ul class="history-list">
+      @for (entry of history(); track entry.createdAt) {
+        <li>
+          <span class="headline">{{ entry.headline }}</span>
+          <span class="date">{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          <p>{{ entry.message }}</p>
+        </li>
+      } @empty {
+        <li class="empty">Aucun message précédent.</li>
+      }
+    </ul>
+  }
+</div>

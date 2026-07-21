@@ -1,77 +1,86 @@
-.login-container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 24px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-.login-container div {
-  margin-bottom: 16px;
-}
-label {
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-}
-input {
+/* ========== REGISTER PAGE ========== */
+/* Reuses login.css variables + adds password strength */
+
+.register-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
+  max-width: 420px;
+  margin: 0 auto;
+  padding-top: 40px;
 }
-.error {
-  color: red;
-  font-size: 14px;
-}
-.success {
-  color: green;
-  font-size: 14px;
-}
-button {
-  padding: 8px 16px;
-  background: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-a {
-  color: #1976d2;
-}
+
+/* Password strength meter */
 .strength-meter {
+  margin-top: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 10px;
 }
+
 .strength-bar {
   flex: 1;
-  height: 6px;
-  background: #eee;
-  border-radius: 3px;
+  height: 4px;
+  background: var(--bg-grid);
+  border-radius: 2px;
   overflow: hidden;
 }
+
 .strength-fill {
   height: 100%;
-  border-radius: 3px;
-  transition: width 0.2s ease, background-color 0.2s ease;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
-.strength-fill.score-0 { width: 20%; background: #d32f2f; }
-.strength-fill.score-1 { width: 40%; background: #f57c00; }
-.strength-fill.score-2 { width: 60%; background: #fbc02d; }
-.strength-fill.score-3 { width: 80%; background: #7cb342; }
-.strength-fill.score-4 { width: 100%; background: #388e3c; }
+
+.strength-fill.strength-0 { background: var(--accent-red); }
+.strength-fill.strength-1 { background: #f97316; }
+.strength-fill.strength-2 { background: var(--accent-yellow); }
+.strength-fill.strength-3 { background: #22c55e; }
+.strength-fill.strength-4 { background: var(--accent-green); }
 
 .strength-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.strength-label.score-0, .strength-label.score-1 { color: #d32f2f; }
-.strength-label.score-2 { color: #f57c00; }
-.strength-label.score-3, .strength-label.score-4 { color: #388e3c; }
 
-.hint {
-  font-size: 13px;
-  color: #666;
-  margin-top: 4px;
+.strength-label.strength-0 { color: var(--accent-red); }
+.strength-label.strength-1 { color: #f97316; }
+.strength-label.strength-2 { color: var(--accent-yellow); }
+.strength-label.strength-3 { color: #22c55e; }
+.strength-label.strength-4 { color: var(--accent-green); }
+
+.strength-feedback {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  margin-bottom: 0;
 }
+
+.error-text {
+  font-size: 12px;
+  color: var(--accent-red);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+/* Reuse login styles */
+.login-brand { /* from login.css */ }
+.brand-dots { /* from login.css */ }
+.brand-dot { /* from login.css */ }
+.brand-title { /* from login.css */ }
+.brand-subtitle { /* from login.css */ }
+.login-card { /* from login.css */ }
+.login-header { /* from login.css */ }
+.form-group { /* from login.css */ }
+.form-label { /* from login.css */ }
+.form-input-wrapper { /* from login.css */ }
+.form-input { /* from login.css */ }
+.form-icon { /* from login.css */ }
+.password-toggle { /* from login.css */ }
+.btn-primary { /* from login.css */ }
+.login-footer { /* from login.css */ }
+.error-message { /* from login.css */ }
