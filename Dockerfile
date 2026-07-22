@@ -8,8 +8,10 @@ RUN npm run build
 
 # Étape 2 : image finale avec Nginx
 FROM nginx:alpine
-RUN rm /etc/nginx/conf.d/default.conf
+RUN rm /etc/nginx/conf.d/default.conf && \
+    chown -R nginx:nginx /etc/nginx /var/cache/nginx /var/run
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist/my-app/browser /usr/share/nginx/html
+COPY --from=build --chown=nginx:nginx /app/dist/my-app/browser /usr/share/nginx/html
 EXPOSE 80
+USER nginx
 CMD ["nginx", "-g", "daemon off;"]
