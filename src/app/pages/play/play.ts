@@ -16,10 +16,6 @@ interface RoundResult {
   familyMatchHeatmap: boolean[][];
 }
 
-// Must match PromptBuilder.AVAILABLE_COLORS on the backend exactly — these are also
-// valid CSS color keywords, so we can use them directly as background-color values.
-const AVAILABLE_COLORS = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'cyan'];
-
 @Component({
   selector: 'app-play',
   standalone: true,
@@ -37,7 +33,14 @@ export class Play implements OnInit, OnDestroy {
   errorMessage = signal('');
   result = signal<RoundResult | null>(null);
 
-  colors = AVAILABLE_COLORS;
+  // Shows the current cell's existing color in the picker if re-editing,
+  // otherwise defaults to a neutral starting point
+  currentPickerColor = computed(() => {
+    const sel = this.selectedCell();
+    if (!sel) return '#ff0000';
+    const existing = this.playerGrid()[sel.row]?.[sel.col];
+    return existing || '#ff0000';
+  });
 
   private roundId!: number;
   private timerHandle: ReturnType<typeof setInterval> | undefined;
@@ -53,8 +56,6 @@ export class Play implements OnInit, OnDestroy {
   ngOnInit() {
     const active = this.gameState.activeRound();
     if (!active) {
-      // No round in progress — e.g. page refresh, or direct URL navigation
-      // without going through Lobby first. Send the player back to start one.
       this.router.navigate(['/lobby']);
       return;
     }
@@ -63,7 +64,6 @@ export class Play implements OnInit, OnDestroy {
     this.targetGrid = active.targetGrid;
     this.secondsLeft.set(active.exposureTime);
 
-    // Blank grid, same dimensions as the target, ready for the player to fill in
     this.playerGrid.set(active.targetGrid.map(row => row.map(() => '')));
 
     this.timerHandle = setInterval(() => {
@@ -76,7 +76,6 @@ export class Play implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Prevent the timer from firing after the player navigates away mid-exposure
     if (this.timerHandle) clearInterval(this.timerHandle);
   }
 
@@ -84,15 +83,21 @@ export class Play implements OnInit, OnDestroy {
     this.selectedCell.set(pos);
   }
 
-  pickColor(color: string) {
+  pickColor(hex: string) {
     const sel = this.selectedCell();
     if (!sel) return;
 
     this.playerGrid.update(grid => {
-      const copy = grid.map(row => [...row]); // Immutable update so the signal actually triggers change detection
-      copy[sel.row][sel.col] = color;
+      const copy = grid.map(row => [...row]);
+      copy[sel.row][sel.col] = hex; // now a hex string like '#e63946'
       return copy;
     });
+    // Note: not auto-closing the picker on pickColor anymore, since <input type="color">
+    // fires 'input' continuously while dragging. Add a confirm button below if you want
+    // an explicit close instead of clicking elsewhere.
+  }
+
+  closeColorPicker() {
     this.selectedCell.set(null);
   }
 

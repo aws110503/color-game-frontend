@@ -42,15 +42,13 @@
         @if (selectedCell()) {
           <div class="palette-section">
             <p class="palette-label">Choisissez une couleur</p>
-            <div class="palette">
-              @for (color of colors; track color) {
-                <button
-                  class="swatch"
-                  [style.background-color]="color"
-                  [title]="color"
-                  (click)="pickColor(color)">
-                </button>
-              }
+            <div class="color-wheel-picker">
+              <input
+                type="color"
+                class="color-wheel-input"
+                [value]="currentPickerColor()"
+                (input)="pickColor($any($event.target).value)" />
+              <span class="color-preview-hex">{{ currentPickerColor() }}</span>
             </div>
           </div>
         }
