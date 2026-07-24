@@ -1,186 +1,90 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Dashboard - Color Game</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a1a; color: #e0e0e0; padding: 20px; }
-        h1 { color: #00ff88; margin-bottom: 20px; font-size: 24px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 20px; }
-        .stat-card h3 { color: #888; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
-        .stat-card .value { font-size: 32px; font-weight: bold; }
-        .stat-card .value.danger { color: #ff4444; }
-        .stat-card .value.warning { color: #ffaa00; }
-        .stat-card .value.safe { color: #00ff88; }
-        .alert-box { background: #2a1a1a; border: 1px solid #ff4444; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
-        .alert-box h2 { color: #ff4444; font-size: 16px; margin-bottom: 12px; }
-        .alert-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
-        .badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .badge-critical { background: #ff000033; color: #ff4444; }
-        .badge-high { background: #ff660033; color: #ff8800; }
-        .badge-medium { background: #ffaa0033; color: #ffaa00; }
-        .badge-login { background: #0066ff33; color: #4488ff; }
-        .badge-access { background: #ff00ff33; color: #ff44ff; }
-        table { width: 100%; border-collapse: collapse; background: #1a1a2e; border-radius: 8px; overflow: hidden; }
-        th { background: #16213e; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; color: #888; }
-        td { padding: 10px 16px; border-bottom: 1px solid #222; font-size: 13px; }
-        tr:hover { background: #16213e; }
-        .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-        .filters select, .filters input { background: #1a1a2e; border: 1px solid #333; color: #e0e0e0; padding: 8px 12px; border-radius: 4px; }
-        .btn { background: #00ff8822; color: #00ff88; border: 1px solid #00ff8844; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; }
-        .btn:hover { background: #00ff8844; }
-        .pagination { display: flex; gap: 8px; margin-top: 16px; justify-content: center; }
-        .ip-red { color: #ff4444; font-weight: bold; }
-        .refresh-btn { float: right; }
-    </style>
-</head>
-<body>
-    <h1>🛡️ Security Dashboard <button class="btn refresh-btn" onclick="loadAll()">🔄 Refresh</button></h1>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Login Failures (24h)</h3>
-            <div class="value danger" id="loginFails24h">-</div>
-        </div>
-        <div class="stat-card">
-            <h3>Suspicious IPs (1h)</h3>
-            <div class="value warning" id="suspiciousCount">-</div>
-        </div>
-        <div class="stat-card">
-            <h3>Total Events (24h)</h3>
-            <div class="value safe" id="totalEvents">-</div>
-        </div>
+<div class="security-dashboard">
+  <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="color:#00ff88; margin:0;">🛡️ Security Dashboard</h2>
+    <button (click)="refresh()" style="background:#0d6efd; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Stats Cards -->
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+    <div style="background:#1a1a2e; padding:20px; border-radius:12px; border:1px solid #2a2a40;">
+      <h4 style="color:#888; margin:0 0 8px 0; font-size:12px; text-transform:uppercase;">Login Failures (24h)</h4>
+      <p style="color:#ff4757; font-size:32px; font-weight:bold; margin:0;">{{ stats?.loginFailures24h ?? '—' }}</p>
     </div>
-
-    <div class="alert-box" id="suspiciousAlert" style="display:none;">
-        <h2>⚠️ Suspicious IPs (&gt;10 failures in 1h)</h2>
-        <div id="suspiciousList"></div>
+    <div style="background:#1a1a2e; padding:20px; border-radius:12px; border:1px solid #2a2a40;">
+      <h4 style="color:#888; margin:0 0 8px 0; font-size:12px; text-transform:uppercase;">Suspicious IPs (1h)</h4>
+      <p style="color:#ffa502; font-size:32px; font-weight:bold; margin:0;">{{ suspiciousIps?.length ?? '—' }}</p>
     </div>
-
-    <div class="filters">
-        <select id="eventFilter" onchange="filterTable()">
-            <option value="">All Events</option>
-            <option value="LOGIN_SUCCESS">LOGIN_SUCCESS</option>
-            <option value="LOGIN_FAILURE">LOGIN_FAILURE</option>
-            <option value="ACCESS_DENIED">ACCESS_DENIED</option>
-            <option value="REGISTER_SUCCESS">REGISTER_SUCCESS</option>
-            <option value="LOGOUT">LOGOUT</option>
-        </select>
-        <button class="btn" onclick="exportCSV()">📥 Export CSV</button>
+    <div style="background:#1a1a2e; padding:20px; border-radius:12px; border:1px solid #2a2a40;">
+      <h4 style="color:#888; margin:0 0 8px 0; font-size:12px; text-transform:uppercase;">Total Events (24h)</h4>
+      <p style="color:#2ed573; font-size:32px; font-weight:bold; margin:0;">{{ totalElements ?? '—' }}</p>
     </div>
+  </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Event</th>
-                <th>User ID</th>
-                <th>IP Address</th>
-                <th>Endpoint</th>
-                <th>Details</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody id="auditTableBody"></tbody>
-    </table>
+  <!-- Toolbar -->
+  <div style="display:flex; gap:12px; margin-bottom:16px;">
+    <select [(ngModel)]="selectedEventType" (change)="onFilterChange(selectedEventType)" 
+            style="background:#1a1a2e; color:#fff; border:1px solid #2a2a40; padding:8px 12px; border-radius:6px;">
+      <option value="All Events">All Events</option>
+      <option value="LOGIN_SUCCESS">Login Success</option>
+      <option value="LOGIN_FAILURE">Login Failure</option>
+      <option value="REGISTER_SUCCESS">Register Success</option>
+    </select>
+    <button (click)="exportCsv()" 
+            style="background:#198754; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">
+      📥 Export CSV
+    </button>
+  </div>
 
-    <div class="pagination">
-        <button class="btn" onclick="prevPage()">← Previous</button>
-        <span id="pageInfo">Page 1</span>
-        <button class="btn" onclick="nextPage()">Next →</button>
-    </div>
+  <!-- Table -->
+  <table style="width:100%; border-collapse:collapse; background:#1a1a2e; border-radius:8px; overflow:hidden;">
+    <thead>
+      <tr style="background:#16213e; color:#888; font-size:12px; text-transform:uppercase;">
+        <th style="padding:12px 16px; text-align:left;">Event</th>
+        <th style="padding:12px 16px; text-align:left;">User ID</th>
+        <th style="padding:12px 16px; text-align:left;">IP Address</th>
+        <th style="padding:12px 16px; text-align:left;">Endpoint</th>
+        <th style="padding:12px 16px; text-align:left;">Details</th>
+        <th style="padding:12px 16px; text-align:left;">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let event of auditLog" style="border-top:1px solid #2a2a40;">
+        <td style="padding:12px 16px;">
+          <span [ngStyle]="{
+            'background': event.eventType === 'LOGIN_FAILURE' ? '#ff475720' : event.eventType === 'REGISTER_SUCCESS' ? '#2ed57320' : '#1e90ff20',
+            'color': event.eventType === 'LOGIN_FAILURE' ? '#ff4757' : event.eventType === 'REGISTER_SUCCESS' ? '#2ed573' : '#1e90ff',
+            'padding': '4px 10px',
+            'border-radius': '12px',
+            'font-size': '11px',
+            'font-weight': 'bold'
+          }">{{ event.eventType }}</span>
+        </td>
+        <td style="padding:12px 16px; color:#ccc;">{{ event.userId ?? '—' }}</td>
+        <td style="padding:12px 16px; color:#ccc; font-family:monospace; font-size:12px;">{{ event.ipAddress }}</td>
+        <td style="padding:12px 16px; color:#888; font-size:12px;">{{ event.endpoint }}</td>
+        <td style="padding:12px 16px; color:#ccc;">{{ event.details }}</td>
+        <td style="padding:12px 16px; color:#888; font-size:12px;">{{ event.occurredAt | date:'medium' }}</td>
+      </tr>
+      <tr *ngIf="auditLog?.length === 0">
+        <td colspan="6" style="padding:40px; text-align:center; color:#666;">No events found</td>
+      </tr>
+    </tbody>
+  </table>
 
-    <script>
-        const API_BASE = 'http://localhost:8080/api/admin/security';
-        let currentPage = 0;
-        let allEvents = [];
-
-        async function loadAll() {
-            await Promise.all([loadStats(), loadSuspiciousIps(), loadAuditLog()]);
-        }
-
-        async function loadStats() {
-            try {
-                const res = await fetch(`${API_BASE}/stats`);
-                const data = await res.json();
-                document.getElementById('loginFails24h').textContent = data.loginFailures24h || 0;
-                document.getElementById('totalEvents').textContent = (data.recentEvents || []).length;
-            } catch(e) { console.error('Stats error:', e); }
-        }
-
-        async function loadSuspiciousIps() {
-            try {
-                const res = await fetch(`${API_BASE}/suspicious-ips`);
-                const data = await res.json();
-                document.getElementById('suspiciousCount').textContent = data.length;
-                const alertBox = document.getElementById('suspiciousAlert');
-                const list = document.getElementById('suspiciousList');
-                if (data.length > 0) {
-                    alertBox.style.display = 'block';
-                    list.innerHTML = data.map(ip => 
-                        `<div class="alert-item"><span class="ip-red">${ip.ipAddress}</span><span>${ip.failureCount} failures</span></div>`
-                    ).join('');
-                } else {
-                    alertBox.style.display = 'none';
-                }
-            } catch(e) { console.error('Suspicious IPs error:', e); }
-        }
-
-        async function loadAuditLog() {
-            try {
-                const res = await fetch(`${API_BASE}/audit-log?page=${currentPage}&size=20`);
-                const data = await res.json();
-                allEvents = data.content || [];
-                renderTable(allEvents);
-                document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${data.totalPages || 1}`;
-            } catch(e) { console.error('Audit log error:', e); }
-        }
-
-        function renderTable(events) {
-            const tbody = document.getElementById('auditTableBody');
-            tbody.innerHTML = events.map(e => `
-                <tr>
-                    <td><span class="badge ${getBadgeClass(e.eventType)}">${e.eventType}</span></td>
-                    <td>${e.userId || '-'}</td>
-                    <td>${e.ipAddress}</td>
-                    <td>${e.endpoint}</td>
-                    <td>${e.details || '-'}</td>
-                    <td>${new Date(e.occurredAt).toLocaleString('fr-FR')}</td>
-                </tr>
-            `).join('');
-        }
-
-        function getBadgeClass(type) {
-            if (type.includes('FAILURE') || type.includes('DENIED')) return 'badge-critical';
-            if (type.includes('LOGIN')) return 'badge-login';
-            if (type.includes('ACCESS')) return 'badge-access';
-            return 'badge-medium';
-        }
-
-        function filterTable() {
-            const filter = document.getElementById('eventFilter').value;
-            const filtered = filter ? allEvents.filter(e => e.eventType === filter) : allEvents;
-            renderTable(filtered);
-        }
-
-        function exportCSV() {
-            const headers = ['Event Type','User ID','IP Address','Endpoint','Details','Date'];
-            const rows = allEvents.map(e => [e.eventType, e.userId||'', e.ipAddress, e.endpoint, e.details||'', e.occurredAt]);
-            const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-            const blob = new Blob([csv], {type: 'text/csv'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `security-audit-${new Date().toISOString().slice(0,10)}.csv`;
-            a.click();
-        }
-
-        function nextPage() { currentPage++; loadAuditLog(); }
-        function prevPage() { if(currentPage > 0) { currentPage--; loadAuditLog(); } }
-
-        loadAll();
-        setInterval(loadAll, 30000);
-    </script>
-</body>
-</html>
+  <!-- Pagination -->
+  <div style="display:flex; justify-content:center; align-items:center; gap:16px; margin-top:20px;">
+    <button (click)="prevPage()" [disabled]="currentPage === 0"
+            style="background:#0d6efd; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;"
+            [ngStyle]="{'opacity': currentPage === 0 ? '0.5' : '1'}">
+      ← Previous
+    </button>
+    <span style="color:#888;">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1"
+            style="background:#0d6efd; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;"
+            [ngStyle]="{'opacity': currentPage >= totalPages - 1 ? '0.5' : '1'}">
+      Next →
+    </button>
+  </div>
+</div>
