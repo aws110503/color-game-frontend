@@ -105,4 +105,8 @@ export class Admin implements OnInit {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
+
+  goToSecurity() {
+    this.router.navigate(['/admin/security']);
+  }
 }

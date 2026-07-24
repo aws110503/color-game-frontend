@@ -9,6 +9,7 @@ import { authGuard } from './auth-guard';
 import { adminGuard } from './admin-guard';
 import { History } from './pages/history/history';
 import { Admin } from './pages/admin/admin';
+import { SecurityDashboard } from './pages/admin/security-dashboard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'lobby', pathMatch: 'full' },
@@ -20,4 +21,5 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileDashboard, canActivate: [authGuard] },
   { path: 'history', component: History, canActivate: [authGuard] },
   { path: 'admin', component: Admin, canActivate: [adminGuard] },
+  { path: 'admin/security', component: SecurityDashboard, canActivate: [adminGuard] },
 ];
